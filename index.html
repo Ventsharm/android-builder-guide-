@@ -1,0 +1,256 @@
+<div style="background:#fff;border:1px solid #e6d8ff;border-radius:28px;padding:28px 24px;text-align:center;box-shadow:0 8px 30px rgba(103,58,183,.08);margin:0 0 20px;font-family:Arial,sans-serif">
+<h2 style="margin:0 0 12px;font-size:2rem;font-weight:700;color:#5e35b1;">Already completed the setup?</h2>
+<p style="margin:0 auto 24px;max-width:650px;font-size:1.15rem;line-height:1.7;color:#555;">
+If you've already created your private GitHub builder repository, GitHub token, signing keystore and repository secrets, you can skip this guide and go straight to the App Builder.
+</p>
+<a href="https://ventsharm.github.io/bubblewrap-builder/" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:linear-gradient(135deg,#7c4dff,#673ab7);color:#fff;text-decoration:none;font-size:1.2rem;font-weight:700;padding:18px 42px;border-radius:18px;box-shadow:0 8px 20px rgba(103,58,183,.3);">🚀 Go to App Builder →</a>
+</div><!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7657d5">
+<title>Android App Builder Setup Guide</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#f4efff,#fff);color:#20212a;min-height:100vh}
+.wrap{width:min(760px,100%);margin:auto;padding:16px 14px 44px}
+.hero{background:linear-gradient(135deg,#6745d0,#9569ed);color:#fff;border-radius:26px;padding:25px 21px;box-shadow:0 16px 42px rgba(83,54,170,.25);margin-bottom:16px}
+.hero h1{margin:0 0 9px;font-size:27px;line-height:1.15}
+.hero p{margin:0;line-height:1.5;opacity:.97}
+.card{background:#fff;border:1px solid rgba(20,20,40,.07);border-radius:22px;padding:19px;box-shadow:0 9px 28px rgba(31,25,55,.08);margin-bottom:14px}
+.card h2{margin:0 0 9px;font-size:20px}
+.card p{line-height:1.55;color:#555866}
+.note{background:#f7f3ff;border:1px solid #e0d5ff;border-radius:16px;padding:14px;line-height:1.5;margin:12px 0}
+.warning{background:#fff6e8;border:1px solid #f0d19c;border-radius:16px;padding:14px;line-height:1.5;margin:12px 0;color:#6c4b10}
+.steps{padding-left:21px;line-height:1.7}
+.steps li{margin-bottom:8px}
+code{background:#f3f1f7;padding:2px 6px;border-radius:7px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-word}
+.picker{display:block;width:100%;border:2px dashed #c4b5fd;border-radius:18px;padding:23px;text-align:center;background:#faf7ff;cursor:pointer;font-weight:800;color:#6540c9}
+.picker input{display:none}
+.fileinfo{margin-top:11px;font-size:14px;color:#707281;word-break:break-word}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+button{border:0;border-radius:15px;padding:15px;font-size:16px;font-weight:900;cursor:pointer}
+.primary{background:linear-gradient(135deg,#6745d0,#8b5de3);color:#fff}
+.secondary{background:#eee9ff;color:#5937bd}
+.clear{width:100%;background:#f2f3f5;color:#3d4048;margin-top:10px}
+.output{width:100%;min-height:190px;margin-top:14px;border:1px solid #d7d7df;border-radius:16px;padding:14px;resize:vertical;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
+.status{margin-top:12px;font-weight:800}
+.ok{color:#177234}.err{color:#b4232c}
+.security{display:flex;gap:10px;background:#eef6ff;border:1px solid #d4e6fb;border-radius:16px;padding:14px;color:#304e70;line-height:1.5}
+.footer{text-align:center;color:#777987;font-size:13px;padding:7px}
+@media(max-width:560px){.actions{grid-template-columns:1fr}.hero h1{font-size:24px}.card{padding:17px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<section class="hero">
+<h1>Android App Builder Setup Guide</h1>
+<p>Set up your signing key and private GitHub builder, then turn any HTTPS website into a signed Android APK and Google Play AAB.</p>
+</section>
+
+<section class="card">
+<h2>1. Get your Android upload signing key</h2>
+<p><strong>Google Play does not give you a .jks file with passwords.</strong> For new apps, Google Play can manage the final app-signing key, while you create and keep your own <strong>upload key</strong> in a <code>.jks</code> keystore.</p>
+<ul class="steps">
+<li>Create an upload keystore using Android Studio or Java <code>keytool</code>.</li>
+<li>When you create it, choose and safely save your <strong>keystore password</strong>, <strong>key password</strong> and <strong>key alias</strong> (for example <code>Upload</code>).</li>
+<li>Keep the <code>.jks</code> file permanently. You will use the same upload key for future updates to that app.</li>
+<li>When you upload your signed AAB to Google Play, Play App Signing can manage the key used to sign the APKs delivered to users.</li>
+</ul>
+<div class="note"><strong>Google Play help:</strong> <a href="https://support.google.com/googleplay/android-developer/answer/9842756" target="_blank" rel="noopener noreferrer">Use Play App Signing</a></div>
+</section>
+
+<section class="card">
+<h2>2. Requirements before you begin</h2>
+<ul class="steps">
+<li>✅ A GitHub account.</li>
+<li>✅ A <strong>private</strong> GitHub repository that will run the Android builds.</li>
+<li>✅ An Android signing keystore (<code>.jks</code>).</li>
+<li>✅ Your keystore password, key password, and key alias.</li>
+<li>✅ A fine-grained GitHub Personal Access Token.</li>
+<li>✅ Any HTTPS website (PWA or ordinary website — GitHub Pages, FreeFlarum, Blogger, Firebase Hosting, etc.).</li>
+</ul>
+<div class="warning"><strong>Important:</strong> The <strong>builder repository should be PRIVATE</strong>. It stores encrypted GitHub Actions secrets containing your Android signing information. Your actual website can still be completely public.</div>
+</section>
+
+<section class="card">
+<h2>What the Android Builder can build</h2>
+<ul class="steps">
+<li>✅ <strong>Website with a working service worker:</strong> built with Bubblewrap.</li>
+<li>✅ <strong>Service worker but no usable manifest:</strong> Bubblewrap is still used and the builder creates the manifest.</li>
+<li>✅ <strong>No service worker:</strong> automatically built as a WebView Android app.</li>
+<li>✅ Both routes produce a signed APK and Google Play AAB and target Android 16 / API 36.</li>
+</ul>
+<div class="note"><strong>You do not have to choose the build type.</strong> Enter the website address and the builder checks it automatically.</div>
+</section>
+
+<section class="card">
+<h2>What this page actually does</h2>
+<p>A <code>.jks</code> file is an Android signing keystore. This page does not change it into HTML. It reads the file locally and converts the raw bytes into Base64 text.</p>
+<div class="note"><strong>Why Base64?</strong> GitHub Actions Secrets accept text, not file uploads. Base64 lets the private workflow recreate the original keystore file during a build.</div>
+</section>
+
+<section class="card">
+<h2>Before converting your keystore</h2>
+<div class="warning"><strong>Use only your own keystore.</strong> Never share the keystore file, its Base64 text, passwords, or GitHub token with anyone.</div>
+<ul class="steps">
+<li>You need your own Android signing keystore, normally ending in <code>.jks</code> or <code>.keystore</code>.</li>
+<li>You need the keystore password.</li>
+<li>You need the key password.</li>
+<li>You need the key alias, for example <code>Upload</code>.</li>
+<li>Your build repository should be private.</li>
+</ul>
+</section>
+
+<section class="card">
+<h2>Convert your .jks to Base64</h2>
+<div class="security"><span>🔒</span><div><strong>Private and offline:</strong> the selected file is processed only inside your browser. It is not uploaded anywhere.</div></div>
+<label class="picker">Choose your .jks file<input id="file" type="file" accept=".jks,.keystore,application/octet-stream"></label>
+<div id="fileinfo" class="fileinfo">No file selected.</div>
+<div class="actions">
+<button id="convert" class="primary" type="button">Convert to Base64</button>
+<button id="copy" class="secondary" type="button">Copy Base64</button>
+</div>
+<textarea id="output" class="output" placeholder="Base64 text will appear here…" spellcheck="false"></textarea>
+<button id="clear" class="clear" type="button">Clear everything</button>
+<div id="status" class="status"></div>
+</section>
+
+
+<section class="card">
+<h2>Create the GitHub access token (required)</h2>
+<p>The Android Builder app needs a <strong>fine-grained GitHub Personal Access Token</strong> so it can start your private GitHub Actions workflow. This token is <strong>separate</strong> from your keystore secrets.</p>
+<ol class="steps">
+<li>Open <strong>GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>.</li>
+<li>Create a new fine-grained token.</li>
+<li>Select <strong>Only select repositories</strong> and choose your private builder repository.</li>
+<li>Under <strong>Repository permissions</strong>, set <strong>Actions → Read and write</strong>. Leave <strong>Metadata → Read-only</strong> (required).</li>
+<li>Generate the token and copy it immediately.</li>
+<li>Open the Android Builder app and paste the token into the <strong>Fine-grained GitHub token</strong> box.</li>
+<li>The token is used to trigger your private build. Your signing key remains safely stored in your repository secrets.</li>
+</ol>
+</section>
+
+<section class="card">
+<h2>Public vs Private repositories</h2>
+<p><strong>Private builder repository:</strong></p>
+<ul class="steps">
+<li>Stores your encrypted GitHub Secrets.</li>
+<li>Runs the GitHub Actions workflow.</li>
+<li>Signs your APK and AAB.</li>
+<li>Should remain <strong>private</strong>.</li>
+</ul>
+<p><strong>Your website:</strong></p>
+<ul class="steps">
+<li>Can be a PWA or an ordinary HTTPS website.</li>
+<li>Can be hosted on GitHub Pages, FreeFlarum, Blogger, Firebase Hosting, or another web host.</li>
+<li>Does <strong>not</strong> need to be private.</li>
+</ul>
+</section>
+
+<section class="card">
+<h2>Add the GitHub secrets</h2>
+<ol class="steps">
+<li>Open the private GitHub build repository.</li>
+<li>Go to <strong>Settings → Secrets and variables → Actions</strong>.</li>
+<li>Create a repository secret called <code>KEYSTORE_BASE64</code> and paste the copied Base64 text.</li>
+<li>Create <code>KEYSTORE_PASSWORD</code> using the keystore password.</li>
+<li>Create <code>KEY_PASSWORD</code> using the signing-key password.</li>
+<li>Create <code>KEY_ALIAS</code> using the key alias, such as <code>Upload</code>.</li>
+<li>Delete any temporary Base64 text file or clipboard copy after saving the secret.</li>
+</ol>
+</section>
+
+<section class="card">
+<h2>How the private workflow restores it</h2>
+<p>During the GitHub Actions build, the workflow decodes the secret back into the original keystore file:</p>
+<div class="note"><code>printf '%s' "$KEYSTORE_BASE64" | base64 --decode &gt; upload-keystore.jks</code></div>
+<p>The temporary keystore is used to sign the APK and AAB, then removed before build artifacts are uploaded.</p>
+</section>
+
+<section class="card">
+<h2>After setup</h2>
+<p>Open the Android Builder, enter the website address and app details, choose an icon, paste your GitHub token and press <strong>Build Android App</strong>. The builder automatically chooses Bubblewrap or WebView and creates the signed APK and AAB.</p>
+</section>
+
+<section class="card">
+<h2>Important safety rules</h2>
+<ul class="steps">
+<li>Never put Base64 keystore text in a public repository.</li>
+<li>Never add the keystore to <code>index.html</code>, JavaScript, README files, or workflow inputs.</li>
+<li>Never upload the keystore as a downloadable artifact.</li>
+<li>Keep the build repository private and limit collaborator access.</li>
+<li>Use a fine-grained GitHub token limited to the one private build repository.</li>
+<li>Enable two-factor authentication on the GitHub account.</li>
+</ul>
+</section>
+
+<div class="footer">Ventsharm Android signing helper</div>
+</main>
+
+<script>
+(()=>{
+const file=document.getElementById('file');
+const output=document.getElementById('output');
+const status=document.getElementById('status');
+const fileinfo=document.getElementById('fileinfo');
+let selected=null;
+
+function setStatus(message,type=''){
+ status.textContent=message;
+ status.className='status '+type;
+}
+
+file.addEventListener('change',()=>{
+ selected=file.files&&file.files[0]?file.files[0]:null;
+ output.value='';
+ setStatus('');
+ fileinfo.textContent=selected?`${selected.name} • ${(selected.size/1024).toFixed(2)} KB`:'No file selected.';
+});
+
+document.getElementById('convert').addEventListener('click',()=>{
+ if(!selected){setStatus('Choose your keystore file first.','err');return}
+ const reader=new FileReader();
+ reader.onerror=()=>setStatus('The file could not be read.','err');
+ reader.onload=()=>{
+  try{
+   const bytes=new Uint8Array(reader.result);
+   let binary='';
+   const chunk=32768;
+   for(let i=0;i<bytes.length;i+=chunk){
+    binary+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+   }
+   output.value=btoa(binary);
+   setStatus('Converted successfully. Copy the Base64 text next.','ok');
+  }catch(error){
+   setStatus('Conversion failed.','err');
+  }
+ };
+ reader.readAsArrayBuffer(selected);
+});
+
+document.getElementById('copy').addEventListener('click',async()=>{
+ if(!output.value){setStatus('Convert the keystore first.','err');return}
+ try{
+  await navigator.clipboard.writeText(output.value);
+  setStatus('Base64 copied to the clipboard.','ok');
+ }catch(error){
+  output.focus();
+  output.select();
+  document.execCommand('copy');
+  setStatus('Base64 copied to the clipboard.','ok');
+ }
+});
+
+document.getElementById('clear').addEventListener('click',()=>{
+ selected=null;
+ file.value='';
+ output.value='';
+ fileinfo.textContent='No file selected.';
+ setStatus('Cleared.','ok');
+});
+})();
+</script>
+</body>
+</html>
