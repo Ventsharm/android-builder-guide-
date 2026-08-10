@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7657d5">
+<title>Android App Builder Setup Guide</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#f4efff,#fff);color:#20212a;min-height:100vh}
+.wrap{width:min(760px,100%);margin:auto;padding:16px 14px 44px}
+.hero{background:linear-gradient(135deg,#6745d0,#9569ed);color:#fff;border-radius:26px;padding:25px 21px;box-shadow:0 16px 42px rgba(83,54,170,.25);margin-bottom:16px}
+.hero h1{margin:0 0 9px;font-size:27px;line-height:1.15}
+.hero p{margin:0;line-height:1.5;opacity:.97}
+.card{background:#fff;border:1px solid rgba(20,20,40,.07);border-radius:22px;padding:19px;box-shadow:0 9px 28px rgba(31,25,55,.08);margin-bottom:14px}
+.card h2{margin:0 0 9px;font-size:20px}
+.card p{line-height:1.55;color:#555866}
+.note{background:#f7f3ff;border:1px solid #e0d5ff;border-radius:16px;padding:14px;line-height:1.5;margin:12px 0}
+.warning{background:#fff6e8;border:1px solid #f0d19c;border-radius:16px;padding:14px;line-height:1.5;margin:12px 0;color:#6c4b10}
+.steps{padding-left:21px;line-height:1.7}
+.steps li{margin-bottom:8px}
+code{background:#f3f1f7;padding:2px 6px;border-radius:7px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-word}
+.picker{display:block;width:100%;border:2px dashed #c4b5fd;border-radius:18px;padding:23px;text-align:center;background:#faf7ff;cursor:pointer;font-weight:800;color:#6540c9}
+.picker input{display:none}
+.fileinfo{margin-top:11px;font-size:14px;color:#707281;word-break:break-word}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+button{border:0;border-radius:15px;padding:15px;font-size:16px;font-weight:900;cursor:pointer}
+.primary{background:linear-gradient(135deg,#6745d0,#8b5de3);color:#fff}
+.secondary{background:#eee9ff;color:#5937bd}
+.clear{width:100%;background:#f2f3f5;color:#3d4048;margin-top:10px}
+.output{width:100%;min-height:190px;margin-top:14px;border:1px solid #d7d7df;border-radius:16px;padding:14px;resize:vertical;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
+.status{margin-top:12px;font-weight:800}
+.ok{color:#177234}.err{color:#b4232c}
+.security{display:flex;gap:10px;background:#eef6ff;border:1px solid #d4e6fb;border-radius:16px;padding:14px;color:#304e70;line-height:1.5}
+.footer{text-align:center;color:#777987;font-size:13px;padding:7px}
+@media(max-width:560px){.actions{grid-template-columns:1fr}.hero h1{font-size:24px}.card{padding:17px}}
+.guide-intro{background:#fff!important;border:1px solid #000!important;border-radius:18px!important;padding:24px!important;margin:24px 0!important;box-shadow:none!important}.guide-intro h1{color:#222!important;margin:0 0 12px!important}.guide-intro p{color:#555!important;margin:0 0 20px!important}.guide-intro .builder-link{display:inline-block!important;background:#fff!important;color:#111!important;border:1px solid #000!important;border-radius:12px!important;padding:12px 20px!important;text-decoration:none!important;font-weight:700!important;box-shadow:none!important}</style>
+</head>
+<body>
+<main class="wrap">
+<section class="guide-intro">
+<h1>Android App Builder Setup Guide</h1>
+<p>Set up your signing key and private GitHub builder, then turn any HTTPS website into a signed Android APK and Google Play AAB.</p>
+<a class="builder-link" href="https://ventsharm.github.io/bubblewrap-builder/">Go to App Builder</a>
+</section>
+<section class="card">
+<h2>Quick setup summary</h2>
+<ol class="steps">
+<li><strong>Create your signing keystore (.jks)</strong> and keep the keystore password, key password and alias.</li>
+<li><strong>Convert the .jks to Base64</strong> using the converter on this page.</li>
+<li><strong>Create the private GitHub builder files</strong>, including <code>.github/workflows/build-public.yml</code>.</li>
+<li><strong>Add the four GitHub Secrets:</strong> <code>KEYSTORE_BASE64</code>, <code>KEYSTORE_PASSWORD</code>, <code>KEY_PASSWORD</code> and <code>KEY_ALIAS</code>.</li>
+<li><strong>Create a fine-grained GitHub token</strong> for only the private builder repository with <strong>Actions: Read and write</strong>, <strong>Contents: Read and write</strong> and <strong>Workflows: Read and write</strong>.</li>
+<li><strong>Open the App Builder</strong>, enter any HTTPS website and build the app.</li>
+</ol>
+<div class="note"><strong>That’s it.</strong> The builder automatically uses Bubblewrap when it finds a working service worker, otherwise it uses WebView.</div>
+</section>
+
+<section class="card">
+<h2>1. Create your signing keystore</h2>
+<p>Create your upload keystore (<code>.jks</code>) using Android Studio or Java <code>keytool</code>. Save these four things safely:</p>
+<ul class="steps">
+<li>The <code>.jks</code> file</li>
+<li>Keystore password</li>
+<li>Key password</li>
+<li>Key alias, such as <code>Upload</code></li>
+</ul>
+<div class="note"><a href="https://support.google.com/googleplay/android-developer/answer/9842756" target="_blank" rel="noopener noreferrer">Google Play App Signing help</a></div>
+</section>
+
+<section class="card">
+<h2>Any HTTPS website can be built</h2>
+<p>Enter your website and the builder chooses automatically:</p>
+<ul class="steps">
+<li><strong>Service worker found:</strong> Bubblewrap.</li>
+<li><strong>No service worker:</strong> WebView.</li>
+</ul>
+<p>Both produce a signed APK and Google Play AAB.</p>
+</section>
+
+<section class="card">
+<h2>2. Convert your .jks to Base64</h2>
+<div class="security"><span>🔒</span><div><strong>Private and offline:</strong> the selected file is processed only inside your browser. It is not uploaded anywhere.</div></div>
+<label class="picker">Choose your .jks file<input id="file" type="file" accept=".jks,.keystore,application/octet-stream"></label>
+<div id="fileinfo" class="fileinfo">No file selected.</div>
+<div class="actions">
+<button id="convert" class="primary" type="button">Convert to Base64</button>
+<button id="copy" class="secondary" type="button">Copy Base64</button>
+</div>
+<textarea id="output" class="output" placeholder="Base64 text will appear here…" spellcheck="false"></textarea>
+<button id="clear" class="clear" type="button">Clear everything</button>
+<div id="status" class="status"></div>
+</section>
+
+
+
+
+
+<section class="card">
+<h2>3. Create the private builder repository</h2>
+<p>Create your <strong>private</strong> <code>private-android-builder</code> repository. Then choose <strong>Create new file</strong> and enter this as the file name:</p>
+<div class="note"><code>.github/workflows/build-public.yml</code></div>
+<p>Leave the file empty and save it. The App Builder will add the workflow for you when you build.</p>
+</section>
+
+<section class="card">
+<h2>4. Add the GitHub secrets</h2>
+<p>Go to <strong>Repository Settings → Secrets and variables → Actions</strong> and add:</p>
+<ul class="steps">
+<li><code>KEYSTORE_BASE64</code> — the Base64 text from this page.</li>
+<li><code>KEYSTORE_PASSWORD</code></li>
+<li><code>KEY_PASSWORD</code></li>
+<li><code>KEY_ALIAS</code></li>
+</ul>
+</section>
+
+<section class="card">
+<h2>5. Create the fine-grained GitHub token</h2>
+<ol class="steps">
+<li>GitHub → <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>.<br><a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener noreferrer">Open Fine-grained personal access tokens</a></li>
+<li>Set the token to <strong>No expiration</strong> so you do not have to create it again later.</li>
+<li>Select <strong>Only select repositories</strong> → your private builder repository.</li>
+<li>Set <strong>Actions → Read and write</strong>.</li>
+<li>Set <strong>Contents → Read and write</strong>.</li>
+<li>Set <strong>Workflows → Read and write</strong>.</li>
+<li>Generate the token and paste it into the App Builder when building. <strong>This is the only thing from your GitHub you need to keep safe.</strong></li>
+</ol>
+</section>
+
+<section class="card">
+<h2>Keep these private</h2>
+<p>Never publish your <code>.jks</code>, Base64 text, passwords or GitHub token. Keep the builder repository private.</p>
+</section>
+
+<div class="footer">Ventsharm Android signing helper</div>
+</main>
+
+<script>
+(()=>{
+const file=document.getElementById('file');
+const output=document.getElementById('output');
+const status=document.getElementById('status');
+const fileinfo=document.getElementById('fileinfo');
+let selected=null;
+
+function setStatus(message,type=''){
+ status.textContent=message;
+ status.className='status '+type;
+}
+
+file.addEventListener('change',()=>{
+ selected=file.files&&file.files[0]?file.files[0]:null;
+ output.value='';
+ setStatus('');
+ fileinfo.textContent=selected?`${selected.name} • ${(selected.size/1024).toFixed(2)} KB`:'No file selected.';
+});
+
+document.getElementById('convert').addEventListener('click',()=>{
+ if(!selected){setStatus('Choose your keystore file first.','err');return}
+ const reader=new FileReader();
+ reader.onerror=()=>setStatus('The file could not be read.','err');
+ reader.onload=()=>{
+  try{
+   const bytes=new Uint8Array(reader.result);
+   let binary='';
+   const chunk=32768;
+   for(let i=0;i<bytes.length;i+=chunk){
+    binary+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+   }
+   output.value=btoa(binary);
+   setStatus('Converted successfully. Copy the Base64 text next.','ok');
+  }catch(error){
+   setStatus('Conversion failed.','err');
+  }
+ };
+ reader.readAsArrayBuffer(selected);
+});
+
+document.getElementById('copy').addEventListener('click',async()=>{
+ if(!output.value){setStatus('Convert the keystore first.','err');return}
+ try{
+  await navigator.clipboard.writeText(output.value);
+  setStatus('Base64 copied to the clipboard.','ok');
+ }catch(error){
+  output.focus();
+  output.select();
+  document.execCommand('copy');
+  setStatus('Base64 copied to the clipboard.','ok');
+ }
+});
+
+document.getElementById('clear').addEventListener('click',()=>{
+ selected=null;
+ file.value='';
+ output.value='';
+ fileinfo.textContent='No file selected.';
+ setStatus('Cleared.','ok');
+});
+})();
+</script>
+</body>
+</html>
